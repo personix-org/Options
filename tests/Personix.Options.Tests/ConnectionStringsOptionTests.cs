@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Options;
+using Microsoft.Extensions.Options;
+using Shouldly;
 using Xunit;
 
-namespace Options.Tests;
+namespace Personix.Options.Tests;
 
 public class ConnectionStringsOptionTests
 {
@@ -34,7 +34,7 @@ public class ConnectionStringsOptionTests
     public void ConnectionStringsOption_ShouldHaveCorrectSectionName()
     {
         // Assert
-        ConnectionStringsOption.SectionName.Should().Be("ConnectionStrings");
+        ConnectionStringsOption.SectionName.ShouldBe("ConnectionStrings");
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class ConnectionStringsOptionTests
         var options = services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
 
         // Assert
-        options.DefaultConnection.Should().Be("Server=localhost;Database=test;User=sa;Password=Pass123;");
-        options.SecondaryConnection.Should().Be("Server=remote;Database=backup;");
+        options.DefaultConnection.ShouldBe("Server=localhost;Database=test;User=sa;Password=Pass123;");
+        options.SecondaryConnection.ShouldBe("Server=remote;Database=backup;");
     }
 
     [Fact]
@@ -74,9 +74,9 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
-        act.Should().Throw<Microsoft.Extensions.Options.OptionsValidationException>()
-            .WithMessage("*DefaultConnection is required*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration));
+        exception.Message.ShouldContain("DefaultConnection is required");
     }
 
     [Fact]
@@ -94,9 +94,9 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
-        act.Should().Throw<Microsoft.Extensions.Options.OptionsValidationException>()
-            .WithMessage("*must be at least 10 characters*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration));
+        exception.Message.ShouldContain("must be at least 10 characters");
     }
 
     [Fact]
@@ -110,9 +110,9 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*ConnectionStrings*");
+        var exception = Should.Throw<InvalidOperationException>(
+            () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration));
+        exception.Message.ShouldContain("ConnectionStrings");
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
-        act.Should().Throw<Microsoft.Extensions.Options.OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration));
     }
 
     [Fact]
@@ -152,9 +152,9 @@ public class ConnectionStringsOptionTests
         var options = services.RegisterAndValidateOptions<MultiConnectionOption>(configuration);
 
         // Assert
-        options.DatabaseA.Should().Be("Server=serverA;Database=dbA;");
-        options.DatabaseB.Should().Be("Server=serverB;Database=dbB;");
-        options.RedisUrl.Should().Be("https://redis.example.com:6379");
+        options.DatabaseA.ShouldBe("Server=serverA;Database=dbA;");
+        options.DatabaseB.ShouldBe("Server=serverB;Database=dbB;");
+        options.RedisUrl.ShouldBe("https://redis.example.com:6379");
     }
 
     [Fact]
@@ -173,8 +173,8 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<MultiConnectionOption>(configuration);
-        act.Should().Throw<Microsoft.Extensions.Options.OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<MultiConnectionOption>(configuration));
     }
 
     [Fact]
@@ -195,8 +195,8 @@ public class ConnectionStringsOptionTests
         var options = services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
 
         // Assert
-        options.DefaultConnection.Should().NotBeNullOrEmpty();
-        options.SecondaryConnection.Should().BeNull();
+        options.DefaultConnection.ShouldNotBeNullOrEmpty();
+        options.SecondaryConnection.ShouldBeNull();
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class ConnectionStringsOptionTests
         var options = services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
 
         // Assert
-        options.SecondaryConnection.Should().Be("1234567890");
+        options.SecondaryConnection.ShouldBe("1234567890");
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class ConnectionStringsOptionTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
-        act.Should().Throw<Microsoft.Extensions.Options.OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration));
     }
 
     [Theory]
@@ -259,8 +259,6 @@ public class ConnectionStringsOptionTests
         var options = services.RegisterAndValidateOptions<TestConnectionStringsOption>(configuration);
 
         // Assert
-        options.DefaultConnection.Should().Be(connectionString);
+        options.DefaultConnection.ShouldBe(connectionString);
     }
 }
-
-

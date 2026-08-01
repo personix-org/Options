@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
-using FluentAssertions;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Options;
+using Shouldly;
 using Xunit;
 
-namespace Options.Tests;
+namespace Personix.Options.Tests;
 
 public class OptionsStartupValidatorTests
 {
@@ -66,10 +66,10 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
 
         // Assert
-        options.Should().NotBeNull();
-        options.RequiredField.Should().Be("ValidValue");
-        options.RangeField.Should().Be(50);
-        options.OptionalUrl.Should().Be("https://example.com");
+        options.ShouldNotBeNull();
+        options.RequiredField.ShouldBe("ValidValue");
+        options.RangeField.ShouldBe(50);
+        options.OptionalUrl.ShouldBe("https://example.com");
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public class OptionsStartupValidatorTests
         var optionsFromDI = serviceProvider.GetService<IOptions<ValidTestOptions>>();
 
         // Assert
-        optionsFromDI.Should().NotBeNull();
-        optionsFromDI!.Value.RequiredField.Should().Be("ValidValue");
+        optionsFromDI.ShouldNotBeNull();
+        optionsFromDI.Value.RequiredField.ShouldBe("ValidValue");
     }
 
     [Fact]
@@ -111,9 +111,9 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>()
-            .WithMessage("*RequiredField*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
+        exception.Message.ShouldContain("RequiredField");
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
     }
 
     [Fact]
@@ -150,8 +150,8 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
     }
 
     [Fact]
@@ -170,8 +170,8 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
     }
 
     [Fact]
@@ -185,9 +185,9 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*TestSection*");
+        var exception = Should.Throw<InvalidOperationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
+        exception.Message.ShouldContain("TestSection");
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<EmptyOptions>(configuration);
 
         // Assert
-        options.Should().NotBeNull();
-        options.SomeProperty.Should().BeEmpty();
+        options.ShouldNotBeNull();
+        options.SomeProperty.ShouldBeEmpty();
     }
 
     [Fact]
@@ -230,8 +230,8 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
 
         // Assert
-        options.Should().NotBeNull();
-        options.OptionalUrl.Should().BeNull();
+        options.ShouldNotBeNull();
+        options.OptionalUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
 
         // Assert
-        options.RangeField.Should().Be(1);
+        options.RangeField.ShouldBe(1);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
 
         // Assert
-        options.RangeField.Should().Be(100);
+        options.RangeField.ShouldBe(100);
     }
 
     [Fact]
@@ -291,8 +291,8 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
     }
 
     [Fact]
@@ -310,8 +310,8 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>();
+        Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
     }
 
     [Fact]
@@ -333,9 +333,9 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration);
 
         // Assert
-        options.Email.Should().Be("test@example.com");
-        options.Phone.Should().Be("123-456-7890");
-        options.Name.Should().Be("John Doe");
+        options.Email.ShouldBe("test@example.com");
+        options.Phone.ShouldBe("123-456-7890");
+        options.Name.ShouldBe("John Doe");
     }
 
     [Fact]
@@ -352,9 +352,9 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>()
-            .WithMessage("*Invalid email format*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration));
+        exception.Message.ShouldContain("Invalid email format");
     }
 
     [Fact]
@@ -372,9 +372,9 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>()
-            .WithMessage("*XXX-XXX-XXXX*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration));
+        exception.Message.ShouldContain("XXX-XXX-XXXX");
     }
 
     [Fact]
@@ -392,9 +392,9 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration);
-        act.Should().Throw<OptionsValidationException>()
-            .WithMessage("*cannot exceed 50 characters*");
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ComplexValidationOptions>(configuration));
+        exception.Message.ShouldContain("cannot exceed 50 characters");
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class OptionsStartupValidatorTests
         var options = services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
 
         // Assert
-        options.RequiredField.Should().Be("12345");
+        options.RequiredField.ShouldBe("12345");
     }
 
     [Fact]
@@ -434,9 +434,50 @@ public class OptionsStartupValidatorTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        var act = () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
-        var exception = act.Should().Throw<OptionsValidationException>().Which;
-        exception.Failures.Should().HaveCountGreaterOrEqualTo(2);
+        var exception = Should.Throw<OptionsValidationException>(
+            () => services.RegisterAndValidateOptions<ValidTestOptions>(configuration));
+        exception.Failures.Count().ShouldBeGreaterThanOrEqualTo(2);
+    }
+
+    [Fact]
+    public void RegisterAndValidateOptions_RegistersOnStartValidation_ThatFailsWithoutAnyComponentReadingOptionsValue()
+    {
+        // The eager check inside RegisterAndValidateOptions already forces validation once,
+        // synchronously, against whatever the configuration holds right now. That alone cannot
+        // prove the *separate* startup-time guard (ValidateOnStart) is actually wired into the
+        // real `services` collection the caller keeps using. To observe ValidateOnStart's own
+        // contribution we need configuration that changes to become invalid *after*
+        // registration -- exactly what the host's IStartupValidator is meant to catch before any
+        // component ever touches IOptions<T>.Value. A reloadable JSON file is the realistic way
+        // that happens in production (e.g. a mounted config file changing between app startup
+        // and IHost.StartAsync()).
+        var configPath = Path.Combine(Path.GetTempPath(), $"personix-options-validate-on-start-{Guid.NewGuid():N}.json");
+        File.WriteAllText(configPath, """{"TestSection":{"RequiredField":"ValidValue","RangeField":50}}""");
+
+        try
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile(configPath, optional: false, reloadOnChange: false)
+                .Build();
+            var services = new ServiceCollection();
+
+            // Arrange: registration succeeds now, because the file is currently valid.
+            services.RegisterAndValidateOptions<ValidTestOptions>(configuration);
+
+            // Configuration drifts to invalid *after* registration completed.
+            File.WriteAllText(configPath, """{"TestSection":{"RequiredField":""}}""");
+            ((IConfigurationRoot)configuration).Reload();
+
+            var provider = services.BuildServiceProvider();
+            var startupValidator = provider.GetRequiredService<IStartupValidator>();
+
+            // Act & Assert: this is what IHost.StartAsync() invokes before the host starts
+            // serving requests. Nothing here ever accessed IOptions<ValidTestOptions>.Value.
+            Should.Throw<OptionsValidationException>(() => startupValidator.Validate());
+        }
+        finally
+        {
+            File.Delete(configPath);
+        }
     }
 }
-

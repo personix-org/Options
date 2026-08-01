@@ -1,4 +1,4 @@
-# Options
+# Personix.Options
 
 Shared DI options validation infrastructure for .NET services.
 
@@ -14,14 +14,14 @@ Shared DI options validation infrastructure for .NET services.
 ### 1. Installation
 
 ```xml
-<PackageReference Include="Options" Version="1.1.0" />
+<PackageReference Include="Personix.Options" Version="1.1.0" />
 ```
 
 ### 2. Define your options class
 
 ```csharp
 using System.ComponentModel.DataAnnotations;
-using Options;
+using Personix.Options;
 
 public class MyOptions : IOption
 {
@@ -54,7 +54,7 @@ public class MyOptions : IOption
 ### 4. Register in Program.cs
 
 ```csharp
-using Options;
+using Personix.Options;
 
 // Registers, validates (data annotations), and returns the options instance
 // Throws OptionsValidationException at startup if validation fails
@@ -72,7 +72,7 @@ For connection strings, inherit from `ConnectionStringsOption`:
 
 ```csharp
 using System.ComponentModel.DataAnnotations;
-using Options;
+using Personix.Options;
 
 public class DatabaseOptions : ConnectionStringsOption
 {
@@ -122,7 +122,9 @@ The attribute validates path **format** only (invalid characters, `Path.GetFullP
 ```csharp
 var options = services.RegisterAndValidateOptions<MyOptions>(configuration);
 if (!Directory.Exists(options.OutputDirectory))
+{
     throw new DirectoryNotFoundException($"Directory not found: {options.OutputDirectory}");
+}
 ```
 
 ## Project Structure
@@ -130,9 +132,9 @@ if (!Directory.Exists(options.OutputDirectory))
 ```
 Options/
 ├── src/
-│   └── Options/           # Main library code
+│   └── Personix.Options/          # Main library code
 └── tests/
-    └── Options.Tests/     # Unit tests
+    └── Personix.Options.Tests/    # Unit tests
 ```
 
 ## Development

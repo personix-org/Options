@@ -1,8 +1,7 @@
-using FluentAssertions;
-using Options;
+using Shouldly;
 using Xunit;
 
-namespace Options.Tests;
+namespace Personix.Options.Tests;
 
 public class IOptionTests
 {
@@ -22,16 +21,16 @@ public class IOptionTests
     public void IOption_ShouldAllowStaticAbstractMember()
     {
         // Assert
-        ConcreteOption.SectionName.Should().Be("MyCustomSection");
+        ConcreteOption.SectionName.ShouldBe("MyCustomSection");
     }
 
     [Fact]
     public void IOption_DifferentImplementations_ShouldHaveDifferentSectionNames()
     {
         // Assert
-        ConcreteOption.SectionName.Should().NotBe(AnotherOption.SectionName);
-        ConcreteOption.SectionName.Should().Be("MyCustomSection");
-        AnotherOption.SectionName.Should().Be("AnotherSection");
+        ConcreteOption.SectionName.ShouldNotBe(AnotherOption.SectionName);
+        ConcreteOption.SectionName.ShouldBe("MyCustomSection");
+        AnotherOption.SectionName.ShouldBe("AnotherSection");
     }
 
     [Fact]
@@ -39,7 +38,7 @@ public class IOptionTests
     {
         // Act & Assert - This compiles, proving static abstract member works
         var sectionName = ConcreteOption.SectionName;
-        sectionName.Should().NotBeNullOrEmpty();
+        sectionName.ShouldNotBeNullOrEmpty();
     }
 
     private class TestConnectionStringsOption : ConnectionStringsOption
@@ -51,16 +50,13 @@ public class IOptionTests
     public void ConnectionStringsOption_ShouldImplementIOption()
     {
         // Assert
-        typeof(TestConnectionStringsOption).GetInterfaces().Should().Contain(typeof(IOption));
+        typeof(TestConnectionStringsOption).GetInterfaces().ShouldContain(typeof(IOption));
     }
 
     [Fact]
     public void ConnectionStringsOption_ShouldHavePredefinedSectionName()
     {
         // Assert
-        TestConnectionStringsOption.SectionName.Should().Be("ConnectionStrings");
+        TestConnectionStringsOption.SectionName.ShouldBe("ConnectionStrings");
     }
 }
-
-
-
